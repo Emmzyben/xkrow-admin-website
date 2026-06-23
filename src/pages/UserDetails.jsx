@@ -68,7 +68,7 @@ const UserDetails = () => {
         </Link>
       </div>
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px', marginBottom: '24px' }}>
         <div>
           <h1 className="page-title" style={{ margin: '0 0 8px 0' }}>{user.firstName} {user.lastName}</h1>
           <p style={{ color: 'var(--text-secondary)' }}>{user.email} • {user.mobileNumber}</p>
@@ -83,7 +83,7 @@ const UserDetails = () => {
         </button>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
 
         {/* Info Card */}
         <div className="card">
@@ -98,7 +98,7 @@ const UserDetails = () => {
           <p><strong>State:</strong> {user.state || 'N/A'}</p>
           <p><strong>NIN:</strong> {user.nin || 'N/A'}</p>
 
-          <div style={{ display: 'flex', gap: '16px', marginTop: '16px' }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', marginTop: '16px' }}>
             {user.profilePicture && (
               <div style={{ cursor: 'pointer' }} onClick={() => setExpandedImage(user.profilePicture)}>
                 <p style={{ marginBottom: '4px', fontWeight: 'bold', fontSize: '0.9rem' }}>Profile Picture:</p>
@@ -124,7 +124,7 @@ const UserDetails = () => {
 
               return (
                 <div key={key} style={{ marginBottom: '24px', paddingBottom: '16px', borderBottom: '1px dashed var(--border-color)' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '12px', marginBottom: '12px' }}>
                     <div>
                       <h4 style={{ margin: 0 }}>{details.businessName || details.brandName || 'Unnamed Business'}</h4>
                       <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', textTransform: 'capitalize' }}>{acc.accountType} Account • {details.status || 'Active'}</p>
@@ -136,7 +136,7 @@ const UserDetails = () => {
                     )}
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', fontSize: '0.9rem' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '8px', fontSize: '0.9rem' }}>
                     {details.businessType && <p><strong>Type:</strong> {details.businessType}</p>}
                     {details.businessCategory && <p><strong>Category:</strong> {details.businessCategory}</p>}
                     {details.registrationNumber && <p><strong>Reg Number:</strong> {details.registrationNumber}</p>}
@@ -147,7 +147,7 @@ const UserDetails = () => {
 
                   <div style={{ marginTop: '16px', background: '#f8f9fa', padding: '12px', borderRadius: '4px' }}>
                     <h5 style={{ margin: '0 0 8px 0' }}>Subscription Details</h5>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', fontSize: '0.85rem' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '8px', fontSize: '0.85rem' }}>
                       <p><strong>Plan:</strong> <span style={{ textTransform: 'capitalize' }}>{details.plan || 'Free'}</span></p>
                       {details.paymentAmount !== undefined && <p><strong>Amount:</strong> ₦{parseFloat(details.paymentAmount).toLocaleString()}</p>}
                       {details.subscriptionStartDate && <p><strong>Start Date:</strong> {new Date(details.subscriptionStartDate).toLocaleDateString()}</p>}
