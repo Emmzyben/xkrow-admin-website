@@ -53,6 +53,7 @@ const UsersList = () => {
           <table>
             <thead>
               <tr>
+                <th>Profile</th>
                 <th>Name</th>
                 <th>Email</th>
                 <th>Phone</th>
@@ -64,7 +65,16 @@ const UsersList = () => {
             <tbody>
               {filteredUsers.map(u => (
                 <tr key={u.id}>
-                  <td>{u.firstName} {u.lastName}</td>
+                  <td>
+                    {u.profilePicture ? (
+                      <img src={u.profilePicture} alt="Profile" style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover', border: '1px solid var(--border-color)' }} />
+                    ) : (
+                      <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: '#e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748b', fontWeight: 'bold', fontSize: '1rem' }}>
+                        {u.firstName ? u.firstName.charAt(0).toUpperCase() : '?'}
+                      </div>
+                    )}
+                  </td>
+                  <td style={{ fontWeight: 600 }}>{u.firstName} {u.lastName}</td>
                   <td>{u.email}</td>
                   <td>{u.mobileNumber}</td>
                   <td>
@@ -85,7 +95,7 @@ const UsersList = () => {
               ))}
               {filteredUsers.length === 0 && (
                 <tr>
-                  <td colSpan="6" style={{ textAlign: 'center' }}>No users found</td>
+                  <td colSpan="7" style={{ textAlign: 'center' }}>No users found</td>
                 </tr>
               )}
             </tbody>

@@ -148,6 +148,51 @@ const DisputeDetails = () => {
               <p style={{ fontSize: '0.9rem' }}>{escrow.description}</p>
             </div>
           )}
+          {Object.entries(escrow)
+            .filter(([k]) => !['id', 'totalCost', 'status', 'description', 'parties', 'buyerName', 'sellerName'].includes(k))
+            .map(([k, v]) => {
+              const formatLabel = (str) => str.replace(/([A-Z])/g, ' $1').trim();
+              const formattedKey = formatLabel(k);
+              
+              const isImageUrl = (str) => typeof str === 'string' && str.startsWith('http') && (
+                str.match(/\.(jpeg|jpg|gif|png|webp)($|\?)/i) || 
+                str.includes('firebasestorage') || 
+                str.includes('cloudinary') || 
+                str.includes('image') ||
+                str.includes('ipfs') ||
+                str.includes('pinata')
+              );
+
+              let displayContent;
+              if (isImageUrl(v)) {
+                displayContent = <a href={v} target="_blank" rel="noreferrer"><img src={v} alt={k} style={{ maxWidth: '100px', maxHeight: '100px', borderRadius: '4px', objectFit: 'cover' }} /></a>;
+              } else if (Array.isArray(v) && v.every(isImageUrl)) {
+                displayContent = <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>{v.map((img, i) => <a key={i} href={img} target="_blank" rel="noreferrer"><img src={img} alt={`${k}-${i}`} style={{ maxWidth: '100px', maxHeight: '100px', borderRadius: '4px', objectFit: 'cover' }} /></a>)}</div>;
+              } else if (typeof v === 'object' && v !== null) {
+                const values = Object.values(v);
+                if (values.length > 0 && values.every(isImageUrl)) {
+                  displayContent = <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>{values.map((img, i) => <a key={i} href={img} target="_blank" rel="noreferrer"><img src={img} alt={`${k}-${i}`} style={{ maxWidth: '100px', maxHeight: '100px', borderRadius: '4px', objectFit: 'cover' }} /></a>)}</div>;
+                } else {
+                  displayContent = <pre style={{ margin: 0, whiteSpace: 'pre-wrap', fontFamily: 'monospace', fontSize: '0.8rem', background: '#f8f9fa', padding: '8px', borderRadius: '4px' }}>{JSON.stringify(v, null, 2)}</pre>;
+                }
+              } else {
+                if (typeof v === 'string' && v.startsWith('http')) {
+                  displayContent = <a href={v} target="_blank" rel="noreferrer" style={{ color: 'var(--primary-color)', textDecoration: 'underline' }}>{v}</a>;
+                } else if ((k.toLowerCase().endsWith('at') || k.toLowerCase().includes('date') || k === 'timestamp') && (typeof v === 'number' || !isNaN(Date.parse(v)))) {
+                  displayContent = new Date(v).toLocaleString();
+                } else {
+                  displayContent = String(v);
+                }
+              }
+              return (
+                <div key={k}>
+                  <p style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'capitalize', marginBottom: '4px' }}>{formattedKey}</p>
+                  <div style={{ fontSize: '0.9rem', wordBreak: 'break-all' }}>
+                    {displayContent}
+                  </div>
+                </div>
+              );
+          })}
         </div>
       </div>
 

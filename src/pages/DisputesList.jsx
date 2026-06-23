@@ -55,10 +55,15 @@ const DisputesList = () => {
               {disputes.map(d => (
                 <tr key={d.id}>
                   <td style={{ fontFamily: 'monospace', fontSize: '0.85rem' }}>{d.id}</td>
-                  <td>{d.buyerId}</td>
-                  <td>{d.sellerId}</td>
+                  <td>{d.buyerName || d.buyerId}</td>
+                  <td>{d.sellerName || d.sellerId}</td>
                   <td>₦{parseFloat(d.totalCost || 0).toLocaleString()}</td>
-                  <td>{d.disputedAt ? new Date(d.disputedAt).toLocaleDateString() : '—'}</td>
+                  <td>
+                    {(() => {
+                      const dateVal = d.disputedAt || d.updatedAt || d.createdAt || d.timestamp;
+                      return dateVal ? new Date(dateVal).toLocaleDateString() : '—';
+                    })()}
+                  </td>
                   <td>
                     <Link to={`/disputes/${d.id}`} className="btn-primary" style={{ padding: '6px 14px', fontSize: '0.85rem' }}>
                       Settle Dispute

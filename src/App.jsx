@@ -9,6 +9,7 @@ import UserDetails from './pages/UserDetails';
 import DisputesList from './pages/DisputesList';
 import DisputeDetails from './pages/DisputeDetails';
 import AdminManagement from './pages/AdminManagement';
+import TransactionsList from './pages/TransactionsList';
 
 const ProtectedRoute = ({ children }) => {
   const { token } = useContext(AuthContext);
@@ -32,6 +33,7 @@ function App() {
             <Route path="users/:id" element={<UserDetails />} />
             <Route path="disputes" element={<DisputesList />} />
             <Route path="disputes/:id" element={<DisputeDetails />} />
+            <Route path="transactions" element={<TransactionsList />} />
             <Route path="admin-management" element={<AdminManagement />} />
           </Route>
         </Routes>
