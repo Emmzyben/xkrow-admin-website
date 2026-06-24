@@ -10,6 +10,8 @@ import DisputesList from './pages/DisputesList';
 import DisputeDetails from './pages/DisputeDetails';
 import AdminManagement from './pages/AdminManagement';
 import TransactionsList from './pages/TransactionsList';
+import EscrowsList from './pages/EscrowsList';
+import EscrowDetails from './pages/EscrowDetails';
 
 const ProtectedRoute = ({ children }) => {
   const { token } = useContext(AuthContext);
@@ -34,6 +36,8 @@ function App() {
             <Route path="disputes" element={<DisputesList />} />
             <Route path="disputes/:id" element={<DisputeDetails />} />
             <Route path="transactions" element={<TransactionsList />} />
+            <Route path="escrows" element={<EscrowsList />} />
+            <Route path="escrows/:id" element={<EscrowDetails />} />
             <Route path="admin-management" element={<AdminManagement />} />
           </Route>
         </Routes>
