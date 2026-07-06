@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { Save } from 'lucide-react';
-import axios from 'axios';
 
 // Ensure the API url points to the backend
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
@@ -26,16 +25,17 @@ const AppSettings = () => {
   const fetchSettings = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(`${API_URL}/admin/app-settings`, {
+      const res = await fetch(`${API_URL}/admin/app-settings`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      if (res.data) {
+      if (res.ok) {
+        const data = await res.json();
         setSettings({
-          forceUpdate: res.data.forceUpdate || false,
-          androidVersion: res.data.androidVersion || '1.0.0',
-          iosVersion: res.data.iosVersion || '1.0.0',
-          playStoreLink: res.data.playStoreLink || '',
-          appStoreLink: res.data.appStoreLink || ''
+          forceUpdate: data.forceUpdate || false,
+          androidVersion: data.androidVersion || '1.0.0',
+          iosVersion: data.iosVersion || '1.0.0',
+          playStoreLink: data.playStoreLink || '',
+          appStoreLink: data.appStoreLink || ''
         });
       }
     } catch (error) {
@@ -59,9 +59,18 @@ const AppSettings = () => {
     try {
       setSaving(true);
       setMessage({ type: '', text: '' });
-      await axios.put(`${API_URL}/admin/app-settings`, settings, {
-        headers: { Authorization: `Bearer ${token}` }
+      const response = await fetch(`${API_URL}/admin/app-settings`, {
+        method: 'PUT',
+        headers: { 
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}` 
+        },
+        body: JSON.stringify(settings)
       });
+      
+      if (!response.ok) {
+        throw new Error('Failed to save settings');
+      }
       setMessage({ type: 'success', text: 'App settings saved successfully.' });
     } catch (error) {
       console.error('Error saving settings:', error);
