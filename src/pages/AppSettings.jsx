@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { Save } from 'lucide-react';
+import { BASE_URL } from '../constants';
 
-// Ensure the API url points to the backend
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
+const API_URL = `${BASE_URL}/api`;
 
 const AppSettings = () => {
   const { token } = useContext(AuthContext);
