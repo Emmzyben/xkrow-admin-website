@@ -26,7 +26,7 @@ const Login = () => {
       const data = await res.json();
 
       if (res.ok && data.token) {
-        login(data.token);
+        login(data.token, data.fullname || data.email);
         navigate('/');
       } else {
         setError(data.message || 'Invalid credentials');

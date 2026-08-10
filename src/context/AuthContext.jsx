@@ -20,7 +20,10 @@ export const AuthProvider = ({ children }) => {
     }
     return storedToken || null;
   });
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(() => {
+    const savedName = localStorage.getItem('adminName');
+    return savedName ? { role: 'admin', name: savedName } : null;
+  });
 
   useEffect(() => {
     if (token) {
@@ -28,23 +31,29 @@ export const AuthProvider = ({ children }) => {
       if (!localStorage.getItem('adminLoginTime')) {
         localStorage.setItem('adminLoginTime', new Date().getTime().toString());
       }
-      // In a real app, decode token or fetch user profile here
-      setUser({ role: 'admin' });
+      const savedName = localStorage.getItem('adminName') || 'Admin';
+      setUser({ role: 'admin', name: savedName });
     } else {
       localStorage.removeItem('adminToken');
       localStorage.removeItem('adminLoginTime');
+      localStorage.removeItem('adminName');
       setUser(null);
     }
   }, [token]);
 
-  const login = (newToken) => {
+  const login = (newToken, name) => {
     setToken(newToken);
     localStorage.setItem('adminLoginTime', new Date().getTime().toString());
+    if (name) {
+      localStorage.setItem('adminName', name);
+      setUser({ role: 'admin', name });
+    }
   };
 
   const logout = () => {
     setToken(null);
     localStorage.removeItem('adminLoginTime');
+    localStorage.removeItem('adminName');
   };
 
   return (

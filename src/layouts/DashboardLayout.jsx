@@ -4,7 +4,7 @@ import { LayoutDashboard, Users, AlertCircle, Shield, LogOut, Menu, X, CreditCar
 import { AuthContext } from '../context/AuthContext';
 
 const DashboardLayout = () => {
-  const { logout } = useContext(AuthContext);
+  const { logout, user } = useContext(AuthContext);
   const navigate = useNavigate();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
@@ -76,7 +76,7 @@ const DashboardLayout = () => {
             <h2 style={{ fontSize: '1.2rem', fontWeight: 600 }}>Dashboard</h2>
           </div>
           <div>
-            <span className="badge badge-success" style={{ padding: '6px 12px' }}>Admin Online</span>
+            <span className="badge badge-success" style={{ padding: '6px 12px' }}>{user?.name || 'Admin'} Online</span>
           </div>
         </header>
         <div className="page-content">
