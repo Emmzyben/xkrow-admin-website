@@ -13,6 +13,8 @@ import TransactionsList from './pages/TransactionsList';
 import EscrowsList from './pages/EscrowsList';
 import EscrowDetails from './pages/EscrowDetails';
 import AppSettings from './pages/AppSettings';
+import BusinessAccountsList from './pages/BusinessAccountsList';
+import BusinessAccountDetails from './pages/BusinessAccountDetails';
 
 const ProtectedRoute = ({ children }) => {
   const { token } = useContext(AuthContext);
@@ -41,6 +43,8 @@ function App() {
             <Route path="escrows/:id" element={<EscrowDetails />} />
             <Route path="admin-management" element={<AdminManagement />} />
             <Route path="app-settings" element={<AppSettings />} />
+            <Route path="business-accounts" element={<BusinessAccountsList />} />
+            <Route path="business-accounts/:userId/:accountId" element={<BusinessAccountDetails />} />
           </Route>
         </Routes>
       </Router>

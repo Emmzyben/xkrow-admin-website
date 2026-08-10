@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Users, AlertCircle, Shield, LogOut, Menu, X, CreditCard, PackageOpen, Settings } from 'lucide-react';
+import { LayoutDashboard, Users, AlertCircle, Shield, LogOut, Menu, X, CreditCard, PackageOpen, Settings, Briefcase } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
 
 const DashboardLayout = () => {
@@ -56,6 +56,10 @@ const DashboardLayout = () => {
           <NavLink to="/app-settings" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} onClick={closeSidebar}>
             <Settings size={20} />
             App Settings
+          </NavLink>
+          <NavLink to="/business-accounts" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} onClick={closeSidebar}>
+            <Briefcase size={20} />
+            Business Accounts
           </NavLink>
         </nav>
         <div className="sidebar-footer">
