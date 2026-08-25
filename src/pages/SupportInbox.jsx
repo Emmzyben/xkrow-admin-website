@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useContext, useRef, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { BASE_URL } from '../constants';
-import { Users, MessageSquare, Wifi, WifiOff, Clock, AlertCircle, Send, RefreshCw, CheckCircle, Image, X } from 'lucide-react';
+import { Users, MessageSquare, Wifi, WifiOff, Clock, AlertCircle, Send, RefreshCw, CheckCircle, Image, X, ExternalLink } from 'lucide-react';
 import io from 'socket.io-client';
 
 // ─────────────────────────────────────────────
@@ -141,9 +142,18 @@ const ChatPanel = ({ session, messages, onSendMessage, onCloseSession, onSettleD
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
           {session.type === 'dispute' ? (
-            <button style={styles.dangerBtn} onClick={() => onSettleDispute(session)}>
-              <CheckCircle size={14} /> Settle Dispute
-            </button>
+            <>
+              <Link
+                to={`/disputes/${session.escrowId || session.id}`}
+                style={styles.secondaryBtn}
+                title="Open dispute details"
+              >
+                <ExternalLink size={14} /> Details
+              </Link>
+              <button style={styles.dangerBtn} onClick={() => onSettleDispute(session)}>
+                <CheckCircle size={14} /> Settle Dispute
+              </button>
+            </>
           ) : (
             <button style={styles.closeBtn} onClick={() => onCloseSession(session)}>
               Close Session
@@ -586,6 +596,12 @@ const styles = {
     display: 'flex', alignItems: 'center', gap: 6,
     background: '#22c55e', color: '#fff', border: 'none',
     borderRadius: 8, padding: '7px 14px', cursor: 'pointer', fontWeight: 600, fontSize: '0.8rem',
+  },
+  secondaryBtn: {
+    display: 'flex', alignItems: 'center', gap: 6,
+    background: 'transparent', color: 'var(--text-primary)', border: '1px solid var(--border-color)',
+    borderRadius: 8, padding: '7px 14px', cursor: 'pointer', fontWeight: 600, fontSize: '0.8rem',
+    textDecoration: 'none',
   },
   closeBtn: {
     background: 'rgba(239,68,68,0.12)', color: '#ef4444', border: '1px solid rgba(239,68,68,0.3)',
