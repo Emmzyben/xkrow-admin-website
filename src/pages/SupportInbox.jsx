@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext, useRef, useCallback } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { BASE_URL } from '../constants';
-import { Users, MessageSquare, Wifi, WifiOff, Clock, AlertCircle, Send, RefreshCw, CheckCircle } from 'lucide-react';
+import { Users, MessageSquare, Wifi, WifiOff, Clock, AlertCircle, Send, RefreshCw, CheckCircle, Image, X } from 'lucide-react';
 import io from 'socket.io-client';
 
 // ─────────────────────────────────────────────
@@ -71,19 +71,43 @@ const SessionList = ({ sessions, selectedId, onSelect }) => (
 
 const ChatPanel = ({ session, messages, onSendMessage, onCloseSession, onSettleDispute, token }) => {
   const [text, setText] = useState('');
+  const [imagePreview, setImagePreview] = useState(null); // base64 data URL for preview
+  const [imageFile, setImageFile] = useState(null);       // File object
   const [sending, setSending] = useState(false);
   const messagesEndRef = useRef(null);
+  const fileInputRef = useRef(null);
   const { user } = useContext(AuthContext);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
+  // Convert file to base64 for preview + sending
+  const handleImageChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      setImagePreview(ev.target.result);
+      setImageFile(file);
+    };
+    reader.readAsDataURL(file);
+    // Reset input so the same file can be reselected
+    e.target.value = '';
+  };
+
+  const clearImage = () => {
+    setImagePreview(null);
+    setImageFile(null);
+  };
+
   const handleSend = async () => {
-    if (!text.trim() || sending) return;
+    if ((!text.trim() && !imagePreview) || sending) return;
     setSending(true);
-    await onSendMessage(text.trim());
+    await onSendMessage(text.trim() || null, imagePreview || null);
     setText('');
+    clearImage();
     setSending(false);
   };
 
@@ -153,16 +177,53 @@ const ChatPanel = ({ session, messages, onSendMessage, onCloseSession, onSettleD
 
       {/* Input */}
       <div style={styles.inputArea}>
-        <textarea
-          value={text}
-          onChange={e => setText(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder="Type a message… (Enter to send)"
-          style={styles.textarea}
-          rows={2}
-          disabled={session.status === 'closed'}
+        {/* Hidden file input */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          style={{ display: 'none' }}
+          onChange={handleImageChange}
         />
-        <button style={styles.sendBtn} onClick={handleSend} disabled={!text.trim() || sending || session.status === 'closed'}>
+
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 6 }}>
+          {/* Image preview strip */}
+          {imagePreview && (
+            <div style={styles.imagePreviewStrip}>
+              <img src={imagePreview} alt="preview" style={styles.imagePreviewThumb} />
+              <button onClick={clearImage} style={styles.imagePreviewClose}>
+                <X size={12} />
+              </button>
+              <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>Image ready to send</span>
+            </div>
+          )}
+          <textarea
+            value={text}
+            onChange={e => setText(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="Type a message… (Enter to send)"
+            style={styles.textarea}
+            rows={2}
+            disabled={session.status === 'closed'}
+          />
+        </div>
+
+        {/* Attach image button */}
+        <button
+          style={styles.attachBtn}
+          onClick={() => fileInputRef.current?.click()}
+          disabled={session.status === 'closed'}
+          title="Attach image"
+        >
+          <Image size={16} />
+        </button>
+
+        {/* Send button */}
+        <button
+          style={styles.sendBtn}
+          onClick={handleSend}
+          disabled={(!text.trim() && !imagePreview) || sending || session.status === 'closed'}
+        >
           {sending ? <RefreshCw size={16} style={{ animation: 'spin 1s linear infinite' }} /> : <Send size={16} />}
         </button>
       </div>
@@ -279,13 +340,23 @@ const SupportInbox = () => {
   };
 
   // ── Send message ────────────────────────────────
-  const handleSendMessage = async (text) => {
+  const handleSendMessage = async (text, image = null) => {
     if (!selectedSession) return;
+    // For disputes, use the standard socket send_message event (handled by socketHandler)
+    if (selectedSession.type === 'dispute') {
+      socketRef.current?.emit('send_message', {
+        conversationId: selectedSession.id,
+        message: text || '',
+        image: image || null
+      });
+      return;
+    }
+    // For 1-on-1 support sessions, use the REST reply endpoint
     try {
       await fetch(`${BASE_URL}/api/admin/support/sessions/${selectedSession.id}/reply`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: text })
+        body: JSON.stringify({ message: text, image: image })
       });
     } catch (e) { console.error(e); }
   };
@@ -509,6 +580,26 @@ const styles = {
     borderRadius: 8, padding: '0 16px', cursor: 'pointer',
     display: 'flex', alignItems: 'center', justifyContent: 'center',
     flexShrink: 0,
+  },
+  attachBtn: {
+    background: 'var(--sidebar-bg)', color: 'var(--text-secondary)',
+    border: '1px solid var(--border-color)',
+    borderRadius: 8, padding: '0 12px', cursor: 'pointer',
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+    flexShrink: 0, transition: 'color 0.15s',
+  },
+  imagePreviewStrip: {
+    display: 'flex', alignItems: 'center', gap: 8,
+    background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.2)',
+    borderRadius: 8, padding: '4px 8px',
+  },
+  imagePreviewThumb: {
+    width: 36, height: 36, borderRadius: 6, objectFit: 'cover', flexShrink: 0,
+  },
+  imagePreviewClose: {
+    background: 'rgba(239,68,68,0.12)', color: '#ef4444',
+    border: 'none', borderRadius: 4, padding: '2px 4px',
+    cursor: 'pointer', display: 'flex', alignItems: 'center',
   },
 };
 
