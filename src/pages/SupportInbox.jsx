@@ -55,7 +55,7 @@ const SessionList = ({ sessions, selectedId, onSelect }) => (
           >
             <div style={styles.sessionTop}>
               <span style={styles.sessionName}>
-                {s.userName || s.phone || s.userId?.slice(0, 8)}
+                {s.displayName || s.userName || s.phone || s.userId?.slice(0, 8)}
               </span>
               {s.type === 'dispute' && (
                 <span style={styles.disputeBadge}>🔴 DISPUTE</span>
@@ -133,7 +133,7 @@ const ChatPanel = ({ session, messages, onSendMessage, onCloseSession, onSettleD
       <div style={styles.chatHeader}>
         <div>
           <div style={{ fontWeight: 600 }}>
-            {session.type === 'dispute' ? '🔴 Dispute' : '💬 Support'} — {session.userName || session.phone || session.userId?.slice(0, 8)}
+            {session.type === 'dispute' ? '🔴 Dispute' : '💬 Support'} — {session.displayName || session.userName || session.phone || session.userId?.slice(0, 8)}
           </div>
           <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
             {session.type === 'dispute' ? 'Buyer + Seller + You (Admin)' : 'User + You (Admin)'}
