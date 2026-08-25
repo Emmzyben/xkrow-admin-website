@@ -483,7 +483,7 @@ const SupportInbox = () => {
       )}
 
       {/* 3-Panel Layout */}
-      <div style={styles.inboxLayout}>
+      <div className="support-inbox-layout">
         <QueuePanel queue={queue} />
         <SessionList
           sessions={sessions}
@@ -529,13 +529,6 @@ const styles = {
     display: 'flex', alignItems: 'center', gap: 10,
     background: 'rgba(245,158,11,0.12)', border: '1px solid rgba(245,158,11,0.3)',
     color: '#f59e0b', borderRadius: 8, padding: '12px 16px', marginBottom: 20, fontSize: '0.875rem',
-  },
-  inboxLayout: {
-    display: 'grid',
-    gridTemplateColumns: '220px 260px 1fr',
-    gap: 12,
-    height: 'calc(100vh - 220px)',
-    minHeight: 500,
   },
   panel: {
     background: 'var(--card-bg)',

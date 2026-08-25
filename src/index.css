@@ -284,3 +284,29 @@ tr:hover td {
     display: block;
   }
 }
+
+/* Support Inbox Specific Responsive Layout */
+.support-inbox-layout {
+  display: grid;
+  grid-template-columns: 220px 260px 1fr;
+  gap: 12px;
+  height: calc(100vh - 220px);
+  min-height: 500px;
+}
+
+@media (max-width: 1000px) {
+  /* Mobile/Tablet layout: Stack all three panels vertically */
+  .support-inbox-layout {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    min-height: auto;
+  }
+  
+  .support-inbox-layout > div {
+    min-height: 350px;
+    max-height: 500px;
+    flex: none;
+  }
+}
+
