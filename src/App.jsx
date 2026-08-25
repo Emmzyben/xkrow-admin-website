@@ -15,6 +15,7 @@ import EscrowDetails from './pages/EscrowDetails';
 import AppSettings from './pages/AppSettings';
 import BusinessAccountsList from './pages/BusinessAccountsList';
 import BusinessAccountDetails from './pages/BusinessAccountDetails';
+import SupportInbox from './pages/SupportInbox';
 
 const ProtectedRoute = ({ children }) => {
   const { token } = useContext(AuthContext);
@@ -45,6 +46,7 @@ function App() {
             <Route path="app-settings" element={<AppSettings />} />
             <Route path="business-accounts" element={<BusinessAccountsList />} />
             <Route path="business-accounts/:userId/:accountId" element={<BusinessAccountDetails />} />
+            <Route path="support" element={<SupportInbox />} />
           </Route>
         </Routes>
       </Router>
