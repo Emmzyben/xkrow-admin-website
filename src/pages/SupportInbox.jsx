@@ -378,19 +378,49 @@ const SupportInbox = () => {
 
   // ── Settle dispute ──────────────────────────────
   const handleSettleDispute = async (session) => {
-    if (!window.confirm('Settle and resolve this dispute? This will lock the chat permanently.')) return;
+    if (!session.escrowId && !session.id) return;
+    const escrowId = session.escrowId || session.id;
+
+    // Prompt admin to choose the winner
+    const choice = window.prompt(
+      `Settle dispute for escrow ${escrowId.slice(0, 10)}…\n\nEnter the winner:\n  B = Buyer (${session.buyerId || 'unknown'})\n  S = Seller (${session.sellerId || 'unknown'})\n\nType B or S:`
+    );
+
+    if (!choice) return;
+    const winner = choice.trim().toUpperCase();
+    if (winner !== 'B' && winner !== 'S') {
+      alert('Invalid input. Please enter B (Buyer) or S (Seller).');
+      return;
+    }
+
+    const winnerId = winner === 'B' ? session.buyerId : session.sellerId;
+    if (!winnerId) {
+      alert('Cannot determine winner ID from session data. Open the dispute from the Disputes page instead.');
+      return;
+    }
+
+    if (!window.confirm(`Confirm: settle in favour of the ${winner === 'B' ? 'Buyer' : 'Seller'}? This will lock the chat permanently.`)) return;
+
     try {
-      // We settle by updating the escrow status via the standard escrow route
-      await fetch(`${BASE_URL}/escrows/${session.escrowId}`, {
-        method: 'PUT',
+      const res = await fetch(`${BASE_URL}/api/admin/disputes/${escrowId}/settle`, {
+        method: 'POST',
         headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: 'resolved' })
+        body: JSON.stringify({ winnerId })
       });
+      if (!res.ok) {
+        const err = await res.json();
+        alert(`Failed to settle: ${err.message}`);
+        return;
+      }
       setSelectedSession(null);
       setMessages([]);
       fetchSessions();
-    } catch (e) { console.error(e); }
+    } catch (e) {
+      console.error(e);
+      alert('Network error while settling dispute.');
+    }
   };
+
 
   // ── Handle beforeunload ─────────────────────────
   useEffect(() => {

@@ -21,7 +21,8 @@ const DisputeTable = ({ rows, isPast }) => (
           <th>Buyer</th>
           <th>Seller</th>
           <th>Amount</th>
-          <th>{isPast ? 'Resolved' : 'Disputed'}</th>
+          {isPast && <th>Resolved To</th>}
+          <th>{isPast ? 'Resolved On' : 'Disputed'}</th>
           <th>Action</th>
         </tr>
       </thead>
@@ -34,6 +35,21 @@ const DisputeTable = ({ rows, isPast }) => (
             <td>{d.buyerName || d.buyerId}</td>
             <td>{d.sellerName || d.sellerId}</td>
             <td style={{ fontWeight: 600 }}>{formatAmount(d)}</td>
+            {isPast && (
+              <td>
+                <span style={{
+                  display: 'inline-block',
+                  padding: '3px 10px',
+                  borderRadius: 20,
+                  fontSize: '0.75rem',
+                  fontWeight: 700,
+                  background: d.resolvedTo === 'Buyer' ? 'rgba(99,102,241,0.12)' : 'rgba(34,197,94,0.12)',
+                  color: d.resolvedTo === 'Buyer' ? '#6366f1' : '#22c55e',
+                }}>
+                  → {d.resolvedTo || 'Unknown'}
+                </span>
+              </td>
+            )}
             <td>{formatDate(d)}</td>
             <td>
               <Link
