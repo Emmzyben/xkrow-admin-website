@@ -57,17 +57,20 @@ const DisputeDetails = () => {
     const fetchAll = async () => {
       const headers = { 'Authorization': `Bearer ${token}` };
       try {
-        const [disputesRes, partiesRes, chatRes, proofsRes] = await Promise.all([
+        const [activeRes, resolvedRes, partiesRes, chatRes, proofsRes] = await Promise.all([
           fetch(`${BASE_URL}/api/admin/disputes`, { headers }),
+          fetch(`${BASE_URL}/api/admin/disputes/resolved`, { headers }),
           fetch(`${BASE_URL}/api/admin/disputes/${id}/parties`, { headers }),
           fetch(`${BASE_URL}/api/admin/disputes/${id}/chat`, { headers }),
           fetch(`${BASE_URL}/api/admin/disputes/${id}/proofs`, { headers }),
         ]);
 
-        if (disputesRes.ok) {
-          const disputes = await disputesRes.json();
-          setEscrow(disputes.find(d => d.id === id) || null);
-        }
+        let allDisputes = [];
+        if (activeRes.ok) allDisputes = [...allDisputes, ...(await activeRes.json())];
+        if (resolvedRes.ok) allDisputes = [...allDisputes, ...(await resolvedRes.json())];
+        
+        setEscrow(allDisputes.find(d => d.id === id) || null);
+
         if (partiesRes.ok) setParties(await partiesRes.json());
         if (chatRes.ok) setChat(await chatRes.json());
         if (proofsRes.ok) setProofs(await proofsRes.json());
