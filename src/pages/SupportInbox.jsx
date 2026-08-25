@@ -422,8 +422,21 @@ const SupportInbox = () => {
   };
 
 
-  // ── Handle beforeunload ─────────────────────────
+  // ── Sync online status on mount/unmount and unload ──────────
   useEffect(() => {
+    // 1. Force offline when the component first mounts (resets any stale server state)
+    const forceOffline = async () => {
+      try {
+        await fetch(`${BASE_URL}/api/admin/support/agent/status`, {
+          method: 'PUT',
+          headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ isOnline: false })
+        });
+      } catch (e) { console.error('Failed to force offline on mount:', e); }
+    };
+    forceOffline();
+
+    // 2. Handle browser tab close/refresh
     const handleBeforeUnload = () => {
       if (isOnline) {
         navigator.sendBeacon(
@@ -433,8 +446,14 @@ const SupportInbox = () => {
       }
     };
     window.addEventListener('beforeunload', handleBeforeUnload);
-    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-  }, [isOnline]);
+
+    // 3. Force offline when the component unmounts (e.g., navigating to another page)
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      forceOffline();
+    };
+  }, [token, isOnline]); // Depends on isOnline for beforeunload check
+
 
   // ─────────────────────────────────────────────
   return (
