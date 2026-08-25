@@ -228,7 +228,7 @@ const AdminManagement = () => {
                 className="input-field"
                 value={fullname}
                 onChange={(e) => setFullname(e.target.value)}
-                placeholder="Admin Full Name"
+                placeholder="Enter First name , then Last name"
                 required
               />
             </div>
