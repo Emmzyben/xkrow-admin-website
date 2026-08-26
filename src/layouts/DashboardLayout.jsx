@@ -111,7 +111,7 @@ const NotificationDropdown = ({ token }) => {
 };
 
 const DashboardLayout = () => {
-  const { logout, user } = useContext(AuthContext);
+  const { logout, user, token } = useContext(AuthContext);
   const navigate = useNavigate();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
