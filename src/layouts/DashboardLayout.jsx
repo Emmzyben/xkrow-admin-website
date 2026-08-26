@@ -27,7 +27,7 @@ const NotificationDropdown = ({ token }) => {
     const socket = io(BASE_URL, { auth: { token } });
     socket.on('admin_notification', notification => {
       setNotifications(previous => [
-        { ...notification, id: `live-${Date.now()}`, read: false },
+        { ...notification, read: false },
         ...previous
       ]);
     });
@@ -43,16 +43,20 @@ const NotificationDropdown = ({ token }) => {
   }, []);
 
   const markAsRead = async notification => {
-    if (notification.read || notification.id.startsWith('live-')) return;
+    if (notification.read) return;
+    setNotifications(previous => previous.map(item =>
+      item.id === notification.id ? { ...item, read: true } : item
+    ));
     try {
-      await fetch(`${BASE_URL}/api/admin/notifications/${notification.id}/read`, {
+      const response = await fetch(`${BASE_URL}/api/admin/notifications/${notification.id}/read`, {
         method: 'PATCH',
         headers: { Authorization: `Bearer ${token}` }
       });
-      setNotifications(previous => previous.map(item =>
-        item.id === notification.id ? { ...item, read: true } : item
-      ));
+      if (!response.ok) throw new Error('Notification read request failed');
     } catch (error) {
+      setNotifications(previous => previous.map(item =>
+        item.id === notification.id ? { ...item, read: false } : item
+      ));
       console.error('Failed to mark admin notification as read:', error);
     }
   };
